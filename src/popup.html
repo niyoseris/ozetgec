@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Özetgeç</title>
+    <link rel="stylesheet" href="theme.css" />
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header class="bar">
+      <div class="brand">
+        <span class="mark">ö</span>
+        <span class="brand-name">özetgeç</span>
+      </div>
+      <span class="chip" id="modelChip" title="Aktif model">model yükleniyor…</span>
+    </header>
+
+    <main>
+      <form id="form">
+        <label class="field">
+          <span class="label-text">Ekşi Sözlük başlığı</span>
+          <div class="input-row">
+            <input
+              id="input"
+              type="text"
+              autocomplete="off"
+              spellcheck="false"
+              placeholder="https://eksisozluk.com/… veya slug"
+            />
+            <button class="btn primary go" type="submit" id="submitBtn" title="Özet sayfasını aç">
+              →
+            </button>
+          </div>
+        </label>
+      </form>
+
+      <div class="range-row">
+        <label for="rangeSelect">Kapsam</label>
+        <select id="rangeSelect">
+          <option value="all">Tüm başlık</option>
+          <option value="today">Bugün</option>
+          <option value="3d">Son 3 gün</option>
+          <option value="7d">Son 7 gün</option>
+        </select>
+      </div>
+
+      <p class="hint" id="hint">
+        Başlığın adresini yapıştırın. Ekşi Sözlük’te giriş yapmış olmanız gerekir.
+      </p>
+
+      <section class="recent" id="recentSection">
+        <div class="section-head">
+          <h2>Son başlıklar</h2>
+          <span class="chip" id="topicCount"></span>
+        </div>
+        <ul id="recentList"></ul>
+        <p class="empty" id="recentEmpty">Henüz özetlenmiş başlık yok.</p>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <button class="btn link" id="allBtn" type="button">Tüm başlıklar</button>
+      <span class="spacer"></span>
+      <button class="btn link" id="optionsBtn" type="button">Ayarlar</button>
+    </footer>
+
+    <script src="popup.js" type="module"></script>
+  </body>
+</html>

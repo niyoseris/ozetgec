@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="canonical" href="https://eksisozluk.com/ornek-baslik--1" />
+    <title>Content script testi</title>
+    <style>
+      body { margin: 0; padding: 30px; background: #f8f8f8; color: #333; font-family: Arial, sans-serif; }
+      #topic { max-width: 650px; }
+      h1#title { font-size: 24px; margin: 0 0 6px; }
+      h1#title a { color: #333; text-decoration: none; }
+      .sub-title-menu { margin-top: 8px; color: #666; font-size: 13px; }
+      ul.topic-list { width: 227px; margin-top: 30px; padding: 0; list-style: none; }
+      ul.topic-list li { height: 43px; }
+      ul.topic-list a { display: block; color: #333; font-size: 14px; line-height: 22px; text-decoration: none; }
+      ul.topic-list small { display: block; color: #888; }
+      .note { max-width: 650px; margin-top: 30px; padding: 12px; border: 1px dashed #ccc; border-radius: 8px; color: #666; font-size: 12px; }
+    </style>
+  </head>
+  <body>
+    <div id="topic">
+      <h1 id="title" data-title="örnek başlık" data-id="1" data-slug="ornek-baslik">
+        <a href="/ornek-baslik--1">örnek başlık</a>
+      </h1>
+      <div class="sub-title-container">
+        <div class="sub-title-menu">şükela · başlıkta ara · takip et</div>
+      </div>
+    </div>
+
+    <ul class="topic-list">
+      <li><a href="https://eksisozluk.com/birinci-baslik--1">birinci başlık <small>5</small></a></li>
+      <li><a href="https://eksisozluk.com/ikinci-baslik--2">ikinci başlık <small>12</small></a></li>
+    </ul>
+
+    <p class="note">
+      Bu sayfa yalnızca content script testi içindir. “Özet geç” menüsünden bir
+      kapsam seçin; seçim <code>window.__ozetgecMessages</code> içine yazılır.
+    </p>
+
+    <script>
+      window.chrome = {
+        runtime: {
+          lastError: null,
+          sendMessage(message, callback) {
+            window.__ozetgecMessages = window.__ozetgecMessages || [];
+            window.__ozetgecMessages.push(message);
+            if (callback) callback({ ok: true });
+          },
+        },
+      };
+    </script>
+    <script src="../src/content.js"></script>
+  </body>
+</html>

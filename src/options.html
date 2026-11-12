@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Özetgeç — Ayarlar</title>
+    <link rel="stylesheet" href="theme.css" />
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <header class="page-head">
+      <div class="brand">
+        <span class="mark">ö</span>
+        <div>
+          <h1>Özetgeç</h1>
+          <p>Ekşi Sözlük başlıklarını kendi modelinle özetle.</p>
+        </div>
+      </div>
+      <span class="chip" id="modelChip"></span>
+    </header>
+
+    <main>
+      <form id="form" autocomplete="off">
+        <section class="card">
+          <div class="card-head">
+            <h2>Model ve API</h2>
+            <p>Ollama Cloud, yerel Ollama veya OpenAI uyumlu herhangi bir adres.</p>
+          </div>
+
+          <div class="grid two">
+            <label>
+              <span class="label-text">Sağlayıcı</span>
+              <select id="provider">
+                <option value="ollama">Ollama — /api/chat</option>
+                <option value="openai">OpenAI uyumlu — /v1/chat/completions</option>
+              </select>
+            </label>
+
+            <label>
+              <span class="label-text">Base URL</span>
+              <input id="baseUrl" type="text" spellcheck="false" placeholder="https://ollama.com" />
+              <small>Ollama Cloud: <code>https://ollama.com</code> · Yerel: <code>http://localhost:11434</code></small>
+              <small class="endpoint-hint" id="endpointHint"></small>
+            </label>
+
+            <label class="span-2">
+              <span class="label-text">API anahtarı</span>
+              <div class="secret">
+                <input id="apiKey" type="password" spellcheck="false" placeholder="ollama.com/settings/keys" />
+                <button type="button" class="btn small" id="toggleKey">Göster</button>
+              </div>
+              <small>
+                Ollama Cloud anahtarını <a href="https://ollama.com/settings/keys" target="_blank" rel="noreferrer">ollama.com/settings/keys</a>
+                adresinden alın. Anahtar yalnızca bu cihazda saklanır; istek doğrudan girdiğiniz adrese gider.
+              </small>
+            </label>
+
+            <label>
+              <span class="label-text">Model</span>
+              <input id="model" type="text" list="modelList" spellcheck="false" placeholder="gpt-oss:120b-cloud" />
+              <datalist id="modelList"></datalist>
+              <small>Örn. <code>gpt-oss:120b-cloud</code>, <code>deepseek-v3.1:671b-cloud</code>. Görsel için <code>qwen3-vl:235b-cloud</code>.</small>
+            </label>
+
+            <label>
+              <span class="label-text">Görsel modeli (opsiyonel)</span>
+              <input id="visionModel" type="text" list="modelList" spellcheck="false" placeholder="boşsa ana model" />
+              <small>Görselleri AI ile betimlemek için görsel destekli model.</small>
+            </label>
+          </div>
+
+          <div class="row wrap">
+            <button type="button" class="btn" id="modelsBtn">Modelleri getir</button>
+            <button type="button" class="btn" id="testBtn">Bağlantıyı test et</button>
+            <button type="submit" class="btn primary" id="saveInlineBtn">Kaydet</button>
+            <span class="status" id="connStatus"></span>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2>Özetleme</h2>
+            <p>Başlık uzunluğuna göre otomatik parçalama ve çıktı ayarları.</p>
+          </div>
+
+          <div class="grid two">
+            <label>
+              <span class="label-text">Yaratıcılık (temperature)</span>
+              <div class="range-row">
+                <input id="temperature" type="range" min="0" max="1" step="0.05" />
+                <output id="tempOut">0.30</output>
+              </div>
+              <small>Düşük değer daha tutarlı, yüksek değer daha serbest özet.</small>
+            </label>
+
+            <label>
+              <span class="label-text">Maksimum çıktı token</span>
+              <input id="maxTokens" type="number" min="0" max="1000000" step="1000" />
+              <small>0 = sınırsız. 1.000.000’a kadar girebilirsiniz; modelin bağlam penceresi yine geçerlidir.</small>
+            </label>
+
+            <label>
+              <span class="label-text">Parça boyutu (karakter)</span>
+              <input id="chunkChars" type="number" min="4000" max="60000" step="1000" />
+              <small>Uzun başlıklar bu boyutta bölünür, önce ara özet çıkarılır.</small>
+            </label>
+
+            <label>
+              <span class="label-text">Sayfa sınırı</span>
+              <input id="maxPages" type="number" min="1" max="60" />
+              <small>Bir sayfa ~100 entry. Çok uzun başlıklarda en yeni bu kadar sayfa + ilk sayfa alınır.</small>
+            </label>
+
+            <label class="check span-2">
+              <input id="autoFirstStage" type="checkbox" />
+              <span>Analizden sonra <strong>Hızlı Özet</strong> aşamasını otomatik üret</span>
+            </label>
+
+            <label class="check span-2">
+              <input id="unlimitedTokens" type="checkbox" />
+              <span>
+                Çıktı token sınırı yok
+                <span class="muted">(API’ye çıktı token parametresi gönderilmez; model bağlamına kadar üretir)</span>
+              </span>
+            </label>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2>Takip ve bildirim</h2>
+            <p>Özetten sonra eklenen entry’leri izler, yeni gelişmeleri özetler.</p>
+          </div>
+
+          <div class="grid two">
+            <label>
+              <span class="label-text">Varsayılan takip aralığı</span>
+              <select id="followIntervalMinutes">
+                <option value="15">15 dakika</option>
+                <option value="30">30 dakika</option>
+                <option value="60">1 saat</option>
+                <option value="180">3 saat</option>
+                <option value="360">6 saat</option>
+                <option value="720">12 saat</option>
+                <option value="1440">24 saat</option>
+              </select>
+              <small>Her başlık için rapor sayfasından değiştirilebilir.</small>
+            </label>
+
+            <label class="check">
+              <input id="notifications" type="checkbox" />
+              <span>Yeni gelişmede masaüstü bildirimi göster</span>
+            </label>
+          </div>
+
+          <p class="note">
+            Takip, tarayıcı açıkken çalışır. Tarayıcı kapalıyken kontrol edilmez; açıldığında
+            sıradaki kontrol yapılır.
+          </p>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2>Görseller</h2>
+            <p>Görseller raporda her zaman görünür. Bu bölüm, görselleri modele betimletmek içindir.</p>
+          </div>
+
+          <div class="grid two">
+            <label>
+              <span class="label-text">Betimlenecek en fazla görsel</span>
+              <input id="maxImages" type="number" min="1" max="20" />
+              <small>Her görsel ayrı bir model çağrısıdır; maliyeti artırır.</small>
+            </label>
+
+            <div class="permission-box">
+              <span class="label-text">Görsel erişimi</span>
+              <button type="button" class="btn" id="imagePermBtn">Görsel erişim izni ver</button>
+              <small>
+                Görselleri indirip modele göndermek için görsel sunucularına erişim gerekir.
+                Yalnızca “Görselleri AI ile betimle” dediğinizde kullanılır.
+              </small>
+            </div>
+          </div>
+
+          <p class="note">
+            Görsel destekli bir model gerekir (ör. <code>qwen3-vl:235b-cloud</code>).
+            Betimleme başarısız olsa bile görseller raporda açılır.
+          </p>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2>Veri</h2>
+            <p>Analiz edilen başlıklar, entry metinleri ve özetler bu cihazda saklanır.</p>
+          </div>
+
+          <p class="stats-line" id="storageStats">Hesaplanıyor…</p>
+
+          <div class="row wrap">
+            <button type="button" class="btn danger" id="clearBtn">Tüm başlık verilerini sil</button>
+          </div>
+
+          <p class="note">
+            Silme işlemi ayarları ve API anahtarını silmez. Entry metinleri özet üretmek için
+            seçtiğiniz API adresine gönderilir; başka bir yere gönderilmez.
+          </p>
+        </section>
+
+        <footer class="save-bar">
+          <span class="status" id="saveStatus"></span>
+          <button type="submit" class="btn primary">Kaydet</button>
+        </footer>
+      </form>
+    </main>
+
+    <script src="options.js" type="module"></script>
+  </body>
+</html>
