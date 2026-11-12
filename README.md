@@ -220,7 +220,7 @@ içindir.
   bağlıdır.
 - API kullanım ücretleri size aittir; uzun başlıklar birden çok çağrı üretir.
 
-## Emeği geçenler
+## İletişim
 
 - **Twitter:** [@niyoseris](https://twitter.com/niyoseris)
 
